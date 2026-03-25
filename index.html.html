@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Performance Comercial</title>
+<style>
+:root {
+  --navy: #0b1e36;
+  --navy2: #0d2540;
+  --navy3: #112d4e;
+  --navy4: #163a5f;
+  --green-dark: #0b4f3a;
+  --green-mid: #0e6b4f;
+  --green-accent: #17936a;
+  --green-light: #20c98a;
+  --green-glow: rgba(32,201,138,0.15);
+  --gold: #f59e0b;
+  --red: #ef4444;
+  --text: #e2e8f0;
+  --text-muted: #7a91aa;
+  --border: rgba(255,255,255,0.07);
+  --row-hover: rgba(17,147,106,0.07);
+  --halo1: rgba(251,146,60,0.4);
+  --halo2: rgba(249,115,22,0.65);
+  --halo3: rgba(234,88,12,0.9);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--navy);color:var(--text);min-height:100vh;}
+
+/* HEADER */
+.header{
+  background:linear-gradient(135deg,var(--navy2) 0%,var(--green-dark) 100%);
+  padding:22px 32px;
+  border-bottom:2px solid var(--green-accent);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;
+}
+.header-brand{display:flex;align-items:center;gap:14px;}
+.header-logo{
+  width:46px;height:46px;border-radius:12px;
+  background:linear-gradient(135deg,var(--green-mid),var(--green-accent));
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  box-shadow:0 0 20px rgba(32,201,138,0.3);
+}
+.header-title h1{font-size:1.4rem;font-weight:700;color:var(--green-light);letter-spacing:.5px;}
+.header-title p{font-size:.75rem;color:var(--text-muted);margin-top:3px;}
+.stats-row{display:flex;gap:12px;flex-wrap:wrap;}
+.stat-card{
+  background:rgba(255,255,255,0.05);border:1px solid var(--border);
+  border-radius:10px;padding:8px 16px;text-align:center;min-width:80px;
+}
+.stat-card .sv{font-size:1.2rem;font-weight:700;color:var(--green-light);}
+.stat-card .sl{font-size:.65rem;color:var(--text-muted);margin-top:2px;text-transform:uppercase;letter-spacing:.5px;}
+
+/* CONTROLES */
+.controls{
+  padding:14px 32px;background:var(--navy2);
+  border-bottom:1px solid var(--border);
+  display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+}
+.search{
+  padding:8px 14px;border-radius:8px;border:1px solid var(--border);
+  background:rgba(255,255,255,0.04);color:var(--text);font-size:.8rem;
+  width:230px;outline:none;transition:border .2s;
+}
+.search:focus{border-color:var(--green-accent);}
+.search::placeholder{color:var(--text-muted);}
+.btn{
+  padding:7px 16px;border-radius:8px;border:1px solid var(--border);
+  background:rgba(255,255,255,0.04);color:var(--text-muted);
+  cursor:pointer;font-size:.75rem;font-weight:500;transition:all .2s;white-space:nowrap;
+}
+.btn:hover,.btn.active{background:var(--green-mid);border-color:var(--green-accent);color:#fff;}
+
+/* LEYENDA */
+.legend{
+  padding:10px 32px;background:var(--navy);
+  border-bottom:1px solid var(--border);
+  display:flex;gap:18px;flex-wrap:wrap;align-items:center;
+}
+.leg{display:flex;align-items:center;gap:7px;font-size:.72rem;color:var(--text-muted);}
+.leg-ic{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;}
+
+/* TABLA */
+.table-wrap{overflow-x:auto;padding:0 32px 48px;}
+table{width:100%;border-collapse:collapse;font-size:.77rem;min-width:1000px;}
+
+thead th{
+  background:var(--navy3);color:var(--text-muted);font-weight:600;
+  font-size:.68rem;text-transform:uppercase;letter-spacing:.6px;
+  padding:11px 7px;text-align:center;border-bottom:2px solid var(--green-dark);
+  position:sticky;top:0;z-index:2;white-space:nowrap;
+}
+thead th:first-child{
+  text-align:left;padding-left:16px;min-width:230px;
+  position:sticky;left:0;z-index:3;background:var(--navy3);
+}
+
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s;}
+tbody tr:hover{background:var(--row-hover);}
+tbody tr.hidden{display:none;}
+
+td{padding:8px 7px;text-align:center;vertical-align:middle;}
+td:first-child{
+  text-align:left;padding-left:14px;
+  position:sticky;left:0;background:var(--navy);z-index:1;
+}
+tbody tr:hover td:first-child{background:#0d2a1c;}
+
+/* AVATAR + NOMBRE */
+.exec-wrap{display:flex;align-items:center;gap:10px;}
+.avatar{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:700;color:#fff;letter-spacing:.5px;
+  border:2px solid rgba(255,255,255,0.1);
+}
+.exec-info .en{font-weight:500;color:var(--text);font-size:.78rem;line-height:1.3;}
+
+/* SCORE */
+.score-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.score-num{font-weight:700;font-size:.88rem;}
+.score-bar{width:38px;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;}
+.score-fill{height:100%;border-radius:2px;transition:width .3s;}
+
+/* PILLS */
+.pill{display:inline-block;padding:3px 9px;border-radius:10px;font-size:.67rem;font-weight:600;white-space:nowrap;}
+.pill-ok{background:rgba(32,201,138,0.15);color:#4ade80;border:1px solid rgba(32,201,138,0.3);}
+.pill-nok{background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);}
+.pill-aplica{background:rgba(56,189,248,0.12);color:#38bdf8;border:1px solid rgba(56,189,248,0.25);}
+.pill-no{background:rgba(255,255,255,0.04);color:var(--text-muted);border:1px solid var(--border);}
+
+/* ICONO CON HALO */
+.ic{
+  width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;margin:0 auto;cursor:default;
+  transition:transform .15s;position:relative;
+}
+.ic:hover{transform:scale(1.25);}
+.h0{box-shadow:none;background:transparent;}
+.h1{
+  background:rgba(251,146,60,0.06);
+  box-shadow:0 0 0 3px var(--halo1),0 0 8px 1px rgba(251,146,60,0.2);
+}
+.h2{
+  background:rgba(249,115,22,0.1);
+  box-shadow:0 0 0 4px var(--halo2),0 0 12px 3px rgba(249,115,22,0.3);
+}
+.h3{
+  background:rgba(234,88,12,0.14);
+  box-shadow:0 0 0 5px var(--halo3),0 0 18px 5px rgba(234,88,12,0.45);
+}
+
+/* FOOTER */
+tfoot td{
+  background:var(--navy3);font-weight:600;font-size:.72rem;
+  padding:10px 7px;border-top:2px solid var(--green-dark);
+  color:var(--text-muted);text-align:center;
+}
+tfoot td:first-child{
+  text-align:left;padding-left:16px;
+  position:sticky;left:0;background:var(--navy3);color:var(--green-light);
+}
+.fg{color:var(--green-light);}
+.fm{color:var(--gold);}
+.fr{color:#f87171;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-brand">
+    <div class="header-logo">📊</div>
+    <div class="header-title">
+      <h1>Performance Comercial</h1>
+      <p>Matriz de Cumplimiento Mensual · 2025</p>
+    </div>
+  </div>
+  <div class="stats-row" id="statsRow"></div>
+</div>
+
+<div class="controls">
+  <input class="search" type="text" id="srch" placeholder="🔍 Buscar ejecutivo...">
+  <button class="btn active" id="bTodos" onclick="fil('todos')">Todos</button>
+  <button class="btn" id="bOk" onclick="fil('ok')">✅ Solo OK</button>
+  <button class="btn" id="bNok" onclick="fil('nok')">❌ Solo NOK</button>
+  <button class="btn" id="bAplica" onclick="fil('aplica')">🔵 Solo APLICA</button>
+  <button class="btn" id="bHalo" onclick="fil('halo')">🟠 Con Intensidad</button>
+</div>
+
+<div class="legend">
+  <span style="font-size:.72rem;color:var(--text-muted);font-weight:600;">LEYENDA:</span>
+  <div class="leg"><span>✅</span><span>Cumple (10)</span></div>
+  <div class="leg"><span>❌</span><span>No cumple (5)</span></div>
+  <div class="leg"><div class="leg-ic h1" style="font-size:10px;">●</div><span>Intensidad 1</span></div>
+  <div class="leg"><div class="leg-ic h2" style="font-size:10px;">●</div><span>Intensidad 2</span></div>
+  <div class="leg"><div class="leg-ic h3" style="font-size:10px;">●</div><span>Intensidad 3</span></div>
+  <div class="leg"><span class="pill pill-aplica" style="font-size:.65rem;">APLICA</span><span>Sujeto a regla de intensidad</span></div>
+</div>
+
+<div class="table-wrap">
+<table id="tbl">
+  <thead>
+    <tr>
+      <th>Ejecutivo</th>
+      <th>Ene</th><th>Feb</th><th>Mar</th><th>Abr</th>
+      <th>May</th><th>Jun</th><th>Jul</th><th>Ago</th>
+      <th>Sep</th><th>Oct</th><th>Nov</th><th>Dic</th>
+      <th>Score</th><th>Filtro</th><th>Aplica</th>
+    </tr>
+  </thead>
+  <tbody id="tbody"></tbody>
+  <tfoot id="tfoot"></tfoot>
+</table>
+</div>
+
+<script>
+const MESES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+// Paleta de avatares
+const PALETA=[
+  ['#0e6b4f','#20c98a'],['#163a5f','#38bdf8'],['#4a1d96','#a78bfa'],
+  ['#7c2d12','#fb923c'],['#1e3a5f','#60a5fa'],['#064e3b','#34d399'],
+  ['#1e1b4b','#818cf8'],['#4c1d24','#fb7185'],['#0c4a6e','#7dd3fc'],
+  ['#14532d','#86efac']
+];
+function avatarColor(n){let s=0;for(let c of n)s+=c.charCodeAt(0);return PALETA[s%PALETA.length];}
+function initials(n){const p=n.trim().split(' ');return p.length>=2?p[0][0]+p[p.length-1][0]:p[0].slice(0,2);}
+
+function scoreColor(pct){return pct>=83?'#20c98a':pct>=67?'#f59e0b':'#f87171';}
+
+const DATA=[
+  {n:"Magaly Gonzalez Munoz",c:[10,5,5,5,5,10,10,5,5,5,5,5],s:75,f:"Nok",a:"APLICA",h:[0,0,0,1,2,0,1,0,1,2,2,1]},
+  {n:"Alberto Emiliano Calfil Vargas",c:[5,5,10,5,5,5,5,5,5,5,5,5],s:65,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Galleguillos Altamirano Alejandra Paola",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Leiva Don Juan Alejandra Ignacia",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Ana Rosa Letelier Verdugo",c:[5,5,10,10,10,5,10,5,10,10,10,5],s:95,f:"Nok",a:"APLICA",h:[0,1,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Alejandrina De Las Mercedes Oro Ramirez",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"APLICA",h:[0,0,0,0,0,0,0,0,1,0,0,0]},
+  {n:"Anselmo Antonio Ponce De Leon Astudillo",c:[5,10,5,5,10,10,5,10,5,10,5,5],s:85,f:"Nok",a:"APLICA",h:[2,0,0,2,1,0,1,0,1,0,0,0]},
+  {n:"Alejandro Enrique Sanhueza Riquelme",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Andrea Carol Villegas Abarca",c:[10,10,5,5,5,5,5,5,5,10,5,10],s:80,f:"Nok",a:"APLICA",h:[0,0,1,0,0,0,0,0,0,0,0,1]},
+  {n:"Berta Elena Araya Donoso",c:[10,5,5,10,5,10,5,10,10,10,5,10],s:95,f:"Nok",a:"APLICA",h:[0,0,2,0,0,0,0,0,0,0,0,0]},
+  {n:"Molina Ordenes Bernardita Elicene",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Claudia Ximena Cid Seguel",c:[5,5,10,5,5,5,5,5,5,5,10,5],s:70,f:"Nok",a:"APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,1]},
+  {n:"Cristina Elisa Guerra Navarro",c:[10,5,5,5,5,5,5,5,5,10,5,5],s:70,f:"Nok",a:"APLICA",h:[0,0,0,0,0,0,1,0,0,0,1,1]},
+  {n:"Marambio Maldonado Carolina Berta",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Cristian Ivan Marchant Sandoval",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Mendez Morales Cristian Antonio",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Muñoz Gamonal Carolina",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Carolina Hesenep Quijada Parra",c:[5,5,10,5,10,10,5,5,5,5,5,10],s:80,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Celia Rosa Rojas Ocaranza",c:[5,5,5,5,5,5,5,5,10,5,5,5],s:65,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Carlos Patricio Soto Soto",c:[5,5,5,5,5,5,5,5,5,10,5,5],s:65,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Cecilia Eugenia Urbina Rojas",c:[5,10,5,5,5,5,5,10,10,10,5,5],s:80,f:"Nok",a:"APLICA",h:[0,1,1,0,0,0,0,0,0,0,0,0]},
+  {n:"Vargas Castro Claudia Alexia",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"APLICA",h:[0,0,0,0,0,0,1,0,0,0,0,0]},
+  {n:"Claudia Andrea Vargas Vargas",c:[5,5,5,5,10,10,10,10,10,10,10,10],s:100,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Cristian Vega Del Rio",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"APLICA",h:[1,1,1,1,1,0,0,0,0,0,0,0]},
+  {n:"Denis Marcela Araya Cortes",c:[5,5,5,5,5,5,10,5,10,10,5,10],s:80,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Guajardo Ramirez Daniela Escarlet",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"APLICA",h:[2,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Daniel Fernando Paredes Opazo",c:[5,5,5,5,10,10,5,10,5,5,5,5],s:75,f:"Nok",a:"APLICA",h:[0,0,0,0,0,0,0,0,0,0,1,1]},
+  {n:"Evelyn Andrea Grandon Sancy",c:[5,10,5,5,5,5,5,5,5,5,5,5],s:65,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Ester Ismenia Guerrero Villalobos",c:[10,10,10,10,10,10,10,10,10,10,10,10],s:120,f:"Ok",a:"APLICA",h:[1,0,0,0,0,0,1,0,0,0,0,0]},
+  {n:"Eugenia Del Pilar Jara Lopez",c:[10,10,10,10,10,10,10,10,10,10,10,10],s:120,f:"Ok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Erwin Hernan Navarro Saldivia",c:[10,10,10,10,5,5,10,5,5,5,10,10],s:95,f:"Nok",a:"APLICA",h:[0,0,1,0,0,0,0,1,1,1,1,0]},
+  {n:"Valenzuela Valenzuela Elvis Salvatore",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Eliana Veronica Valenzuela Valenzuela",c:[5,10,5,5,5,5,5,5,5,5,5,5],s:65,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Felipe Andres Rozas Baeza",c:[5,5,5,5,5,10,5,5,5,5,5,5],s:65,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"González Guzmán Giovanna",c:[5,10,5,5,5,5,5,5,5,5,5,5],s:65,f:"Nok",a:"APLICA",h:[0,1,1,1,2,1,2,0,0,0,0,0]},
+  {n:"Gisselle Gabriela Ulloa Millas",c:[5,5,10,5,5,10,10,10,5,10,10,10],s:95,f:"Nok",a:"APLICA",h:[0,0,1,1,0,0,0,0,1,0,0,1]},
+  {n:"Hector Eduardo Becerra Rojas",c:[5,5,10,5,5,5,10,10,10,10,10,10],s:95,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Astorga Contreras Ingrid Soledad",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"APLICA",h:[1,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Ivonne Del Carmen Astorga Plaza",c:[5,5,5,5,5,5,10,10,5,5,5,5],s:70,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Jose Luis Alvarado Delgado",c:[5,10,5,10,10,10,10,10,5,10,10,10],s:105,f:"Nok",a:"APLICA",h:[1,0,0,1,0,0,0,0,0,0,0,0]},
+  {n:"Jannet Alejandra Chacana Milla",c:[10,5,10,10,5,5,10,10,5,10,10,5],s:95,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Chavez Diaz Jocelyn Denisse",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Cortes Castillo Juan Luis",c:[10,5,10,5,5,5,5,5,5,5,5,5],s:70,f:"Nok",a:"APLICA",h:[0,1,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Jaime Alberto Gonzalez Sanchez",c:[10,5,10,10,10,5,5,10,10,10,10,10],s:105,f:"Nok",a:"APLICA",h:[0,2,0,0,0,0,1,0,0,0,0,0]},
+  {n:"Jaramillo Andrade Jasmin Alexandra",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Janina De Las Mercedes Millaqueo Ibarra",c:[5,5,5,5,10,10,5,10,10,5,10,10],s:90,f:"Nok",a:"APLICA",h:[2,2,1,1,0,0,0,0,1,0,0,0]},
+  {n:"Jose Eduardo Munoz Espinosa",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Jonathan Arturo Munoz Salas",c:[5,5,5,5,5,10,10,10,10,10,10,5],s:90,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Jose Hernan Nova Raiman",c:[5,5,5,5,5,5,10,5,5,10,5,10],s:75,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Judith Orellana Parada",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Jenny Carolina Provoste Salazar",c:[5,10,5,5,5,5,5,5,5,5,5,5],s:65,f:"Nok",a:"APLICA",h:[1,0,0,0,1,2,1,2,1,1,0,0]},
+  {n:"Soto Cabello Jose Javier",c:[5,10,5,5,5,5,5,5,5,5,5,5],s:65,f:"Nok",a:"APLICA",h:[0,1,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Joaquin Antonio Tapia Ibanez",c:[10,5,10,10,10,10,10,10,10,10,10,10],s:115,f:"Nok",a:"APLICA",h:[0,1,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Jose Luis Torres Guzman",c:[5,5,5,5,5,5,10,5,5,5,5,10],s:70,f:"Nok",a:"APLICA",h:[0,1,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Jocelyn Valeska Troncoso Fuentes",c:[5,5,5,5,10,10,5,10,10,10,10,5],s:90,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Juan Manuel Valenzuela Troncoso",c:[5,5,10,5,5,10,10,10,10,10,10,5],s:95,f:"Nok",a:"APLICA",h:[0,2,0,0,0,0,0,0,0,0,0,1]},
+  {n:"Juliette Cristina Villalobos Cares",c:[5,10,10,10,10,5,10,10,10,5,5,5],s:95,f:"Nok",a:"APLICA",h:[0,1,0,0,0,1,0,0,0,1,1,0]},
+  {n:"Zuñiga Gonzalez Julio Sergio",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Zuñiga Rebolledo Juan Francisco",c:[5,5,10,5,5,5,5,5,5,5,5,5],s:65,f:"Nok",a:"APLICA",h:[0,0,1,0,0,0,0,0,0,0,0,0]},
+  {n:"Karina Pamela Eugenio Carrillo",c:[10,10,10,10,5,10,10,10,10,10,10,10],s:115,f:"Nok",a:"APLICA",h:[2,0,1,1,0,1,1,0,0,0,0,0]},
+  {n:"Karen Georgina Jaramillo Villegas",c:[10,10,10,10,10,5,10,10,10,10,10,10],s:115,f:"Nok",a:"APLICA",h:[1,1,1,1,1,1,0,1,0,0,0,0]},
+  {n:"Kattya Torres Cancino",c:[10,5,10,5,5,10,10,10,5,10,5,10],s:95,f:"Nok",a:"APLICA",h:[0,1,0,0,0,1,0,0,0,0,0,0]},
+  {n:"Lilian Paola Contreras Cortes",c:[10,5,10,10,5,5,5,10,5,5,10,10],s:90,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Laura Carolina Inostroza Elgueta",c:[5,5,5,5,5,10,10,10,10,10,10,10],s:95,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Ortega Garces Leandro Enrique",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Luis Hernan Saavedra Jorquera",c:[5,5,10,5,5,5,10,5,10,10,5,5],s:80,f:"Nok",a:"APLICA",h:[0,1,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Lorna Pamela Salamanca Riveros",c:[10,10,10,10,10,5,5,5,10,10,10,5],s:100,f:"Nok",a:"APLICA",h:[0,0,0,0,0,1,1,1,0,0,0,0]},
+  {n:"Segura Fuentealba Lorena Ivonne",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Marlene Estrella De Las Mercedes Albornoz Retamal",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"APLICA",h:[0,0,0,0,0,0,0,0,1,0,0,0]},
+  {n:"Aranda Huet Maria Paulina",c:[5,10,10,5,5,5,5,5,5,5,5,5],s:70,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Maria De La Luz Arriagada Aguilera",c:[5,5,10,10,5,5,5,5,10,10,10,10],s:90,f:"Nok",a:"APLICA",h:[0,1,0,0,0,0,0,0,0,0,0,1]},
+  {n:"Mauricio Alejandro Arriagada Parra",c:[5,5,5,5,5,10,5,5,5,10,5,5],s:70,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Aviles Abarca Mery Eugenia",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"APLICA",h:[1,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Barra Castillo Maria Loreto",c:[5,5,10,5,5,5,5,5,5,5,5,5],s:65,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Marcela Angelica Benavides Cruz",c:[5,5,5,10,5,10,10,5,5,5,5,5],s:75,f:"Nok",a:"APLICA",h:[0,1,0,0,0,0,0,0,0,0,1,0]},
+  {n:"Michael Ariel Calderon Cereno",c:[5,5,10,5,5,5,5,10,10,5,10,10],s:85,f:"Nok",a:"APLICA",h:[1,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Marcia Alejandra Caroca Cornejo",c:[10,5,5,5,5,10,5,5,5,5,5,5],s:70,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Marta Elena Carrasco Cerda",c:[5,5,5,5,5,5,5,5,5,5,10,5],s:65,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Del Castillo Soria Mary",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"APLICA",h:[2,2,1,1,1,1,0,0,0,0,0,0]},
+  {n:"Mariangela Gargallo Mautino",c:[10,10,5,5,5,5,5,5,5,5,5,5],s:70,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Mario Andres Pacheco Olguin",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Vasquez Pinto Milicen Paola",c:[10,5,5,5,5,5,5,5,5,5,5,5],s:65,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Marcela Alejandra Rebolledo Munoz",c:[5,5,5,5,5,5,5,5,5,10,5,5],s:65,f:"Nok",a:"APLICA",h:[0,0,0,0,0,0,1,0,0,0,0,0]},
+  {n:"Macarena Katia Riveros Chavez",c:[10,10,5,10,5,10,5,10,10,10,10,10],s:105,f:"Nok",a:"APLICA",h:[0,0,1,0,0,0,0,0,1,0,0,0]},
+  {n:"Maria Elena Sanchez Parra",c:[5,5,5,5,10,5,5,10,10,10,5,10],s:85,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Monica Mabel Santana Vidal",c:[5,10,5,5,5,5,10,5,5,10,10,10],s:85,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Marcia Alejandra Santander Neira",c:[5,5,10,5,5,5,5,5,5,10,5,5],s:70,f:"Nok",a:"APLICA",h:[0,0,0,0,0,0,1,0,0,0,0,0]},
+  {n:"Torres Castillo María Angélica",c:[10,5,10,10,10,5,5,5,5,5,5,5],s:80,f:"Nok",a:"APLICA",h:[0,1,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Mariela Solange Valladares Ramos",c:[10,10,5,10,5,5,5,10,10,10,10,10],s:100,f:"Nok",a:"APLICA",h:[0,0,1,0,0,0,0,0,0,0,0,1]},
+  {n:"Mauricio Daniel Villanueva Aravena",c:[10,5,10,5,5,10,10,10,5,10,5,5],s:90,f:"Nok",a:"APLICA",h:[0,0,0,0,0,0,0,0,1,1,0,0]},
+  {n:"Nayarette Del Carmen Salinas Vidal",c:[5,5,5,5,5,5,5,10,5,10,5,5],s:70,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Natalia Andrea Torres Ramirez",c:[10,5,5,5,10,10,5,5,5,5,5,5],s:75,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Otilia Maria Erazo Cadet",c:[5,10,10,10,10,10,10,10,5,10,10,10],s:110,f:"Nok",a:"APLICA",h:[1,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Alarcón Reyes Pedro Javier",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Pamela Viviana Balladares Reyna",c:[10,5,5,5,10,5,5,5,5,10,10,10],s:85,f:"Nok",a:"APLICA",h:[0,2,0,2,0,1,2,1,1,0,0,0]},
+  {n:"Pamela Soledad Condell Condell",c:[5,5,5,5,5,5,5,5,5,10,10,10],s:75,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Patricia Eliana Duran Fernandez",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Patricio Marcelo Gonzalez Sierra",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Hoffmann Velasquez Pamela Vitalia",c:[5,10,5,5,5,5,5,5,5,5,5,5],s:65,f:"Nok",a:"APLICA",h:[0,0,0,0,3,0,0,0,0,0,0,0]},
+  {n:"Patricia Alejandra Jimenez Grancelli",c:[5,5,5,5,5,5,5,5,5,5,10,5],s:65,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Priscila Elizabeth Rogel Fuentes",c:[5,5,5,5,5,5,5,5,5,10,10,10],s:75,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Pamela Alejandra San Martin Olivares",c:[5,5,5,5,5,10,5,10,5,10,5,5],s:75,f:"Nok",a:"APLICA",h:[1,0,0,0,0,0,0,0,0,0,3,1]},
+  {n:"Valladares Reyes Patricia Viviana",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Roberto Jaime Adasme Vera",c:[5,10,10,5,10,5,5,5,5,10,10,10],s:90,f:"Nok",a:"APLICA",h:[1,0,0,0,0,0,0,1,0,0,0,0]},
+  {n:"Roberto Antonio Alvarez Aranguiz",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Rita Andrea Arregui Arata",c:[5,10,5,10,10,10,10,5,5,5,5,10],s:90,f:"Nok",a:"APLICA",h:[1,0,1,0,0,0,0,0,0,0,1,0]},
+  {n:"Blanco Heredia Rosana Jimena",c:[10,5,5,5,5,5,5,5,5,5,5,5],s:65,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Regisnaldo Del Carmen Reyes Silva",c:[5,5,5,5,5,5,5,5,5,10,5,5],s:65,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Roberto Alejandro Sepulveda Sandoval",c:[10,10,10,10,10,10,5,10,10,10,10,10],s:115,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Rodrigo Alejandro Ulloa Aguilar",c:[5,5,10,5,5,10,10,10,5,10,5,10],s:90,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Rodrigo Andres Vasquez Vergara",c:[5,10,10,10,10,10,10,10,10,10,10,5],s:110,f:"Nok",a:"APLICA",h:[1,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Asencio Vidal Sandra Daniela",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"APLICA",h:[1,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Samuel Aurelio Benavides Gonzalez",c:[5,5,10,5,10,5,10,5,5,5,5,5],s:75,f:"Nok",a:"APLICA",h:[1,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Correa Garrido Sergio Nelson",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Sandra Carolina Munoz Marticorena",c:[10,10,10,10,5,5,5,10,5,10,10,5],s:95,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Sandra Paola Perez Poblete",c:[5,5,10,10,5,10,5,10,5,10,5,5],s:85,f:"Nok",a:"APLICA",h:[0,0,0,0,0,0,0,0,0,0,1,0]},
+  {n:"Silvia Lucila Sanhueza Salazar",c:[5,10,5,10,10,10,10,5,5,10,5,5],s:90,f:"Nok",a:"APLICA",h:[0,0,0,0,0,0,0,0,1,0,0,0]},
+  {n:"Trinidad Del Pilar Perez Pavez",c:[10,10,5,10,5,10,10,5,5,5,5,10],s:90,f:"Nok",a:"APLICA",h:[0,0,0,0,0,0,0,1,1,2,0,0]},
+  {n:"Vilma Loreto Caceres Acevedo",c:[10,10,10,10,10,10,10,10,10,10,10,10],s:120,f:"Ok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Valeska Ivonne Espinoza Moya",c:[5,10,5,10,10,5,5,5,10,10,10,5],s:90,f:"Nok",a:"APLICA",h:[1,0,1,0,1,0,0,0,0,1,0,1]},
+  {n:"Victor Fabian Henriquez Garay",c:[5,5,10,5,5,10,10,5,10,10,10,10],s:95,f:"Nok",a:"APLICA",h:[0,0,0,0,0,0,0,0,1,0,0,1]},
+  {n:"Veronica Germania Jimenez Barria",c:[10,5,5,5,10,5,5,10,5,10,5,5],s:80,f:"Nok",a:"APLICA",h:[0,0,1,0,0,0,0,0,0,0,1,0]},
+  {n:"Veronica Del Carmen Nunez Plaza",c:[5,5,5,5,5,5,5,5,5,5,5,5],s:60,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Veronica Andrea Valdebenito Quiroz",c:[10,10,10,10,10,10,10,10,10,10,10,5],s:115,f:"Nok",a:"APLICA",h:[0,0,0,0,0,1,1,0,0,0,0,0]},
+  {n:"Sandra Elizabeth Vera Rojas",c:[5,10,5,5,5,10,10,10,5,5,10,5],s:85,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Ximena Paola Villanueva Lopete",c:[5,5,5,5,5,5,5,5,5,10,10,10],s:75,f:"Nok",a:"NO APLICA",h:[0,0,0,0,0,0,0,0,0,0,0,0]},
+  {n:"Yasmine Elena Nunez Vicencio",c:[5,10,10,10,10,5,5,5,10,10,5,5],s:90,f:"Nok",a:"APLICA",h:[0,0,0,1,2,0,0,1,1,0,1,0]},
+];
+
+let filtroAct='todos';
+
+function avatarBg(n){let s=0;for(let c of n)s+=c.charCodeAt(0);return PALETA[s%PALETA.length];}
+function getInitials(n){const p=n.trim().split(' ');return(p[0][0]+(p[p.length-1]?.[0]||'')).toUpperCase();}
+
+function icon(cumpl,intens,aplica,mes){
+  const ok=cumpl===10;
+  const sym=ok?'✅':'❌';
+  const useHalo=aplica==='APLICA'&&intens>0;
+  const hc=useHalo?'h'+Math.min(intens,3):'h0';
+  const tip=`${mes}: ${ok?'Cumple ✅':'No Cumple ❌'}${useHalo?' · Intensidad '+intens:''}`;
+  return `<div class="ic ${hc}" title="${tip}">${sym}</div>`;
+}
+
+function render(){
+  const tbody=document.getElementById('tbody');
+  const tfoot=document.getElementById('tfoot');
+  const srch=document.getElementById('srch').value.toLowerCase();
+
+  const totM=Array(12).fill(0), cntM=Array(12).fill(0);
+  let rows='';
+
+  DATA.forEach(d=>{
+    const [bg,fg]=avatarBg(d.n);
+    const ini=getInitials(d.n);
+    const pct=Math.round((d.s/120)*100);
+    const sc=scoreColor(pct);
+    const fPill=d.f==='Ok'
+      ?`<span class="pill pill-ok">✅ OK</span>`
+      :`<span class="pill pill-nok">❌ NOK</span>`;
+    const aPill=d.a==='APLICA'
+      ?`<span class="pill pill-aplica">APLICA</span>`
+      :`<span class="pill pill-no">NO</span>`;
+
+    let cells='';
+    d.c.forEach((v,i)=>{
+      const intens=d.a==='APLICA'?d.h[i]:0;
+      cells+=`<td>${icon(v,intens,d.a,MESES[i])}</td>`;
+      if(v===10)totM[i]++;
+      cntM[i]++;
+    });
+
+    const show=d.n.toLowerCase().includes(srch);
+    const fok=d.f.toLowerCase();
+    const haHalo=d.h.some(x=>x>0);
+
+    rows+=`<tr data-f="${fok}" data-a="${d.a}" data-halo="${haHalo?1:0}" data-name="${d.n.toLowerCase()}" ${show?'':''}>
+      <td>
+        <div class="exec-wrap">
+          <div class="avatar" style="background:linear-gradient(135deg,${bg},${avatarBg(d.n)[1]})">${ini}</div>
+          <div class="exec-info"><div class="en">${d.n}</div></div>
+        </div>
+      </td>
+      ${cells}
+      <td>
+        <div class="score-wrap">
+          <span class="score-num" style="color:${sc}">${d.s}</span>
+          <div class="score-bar"><div class="score-fill" style="width:${pct}%;background:${sc}"></div></div>
+        </div>
+      </td>
+      <td>${fPill}</td>
+      <td>${aPill}</td>
+    </tr>`;
+  });
+
+  tbody.innerHTML=rows;
+
+  // Footer
+  let fc=`<td>% Cumplimiento / Mes</td>`;
+  for(let i=0;i<12;i++){
+    const p=cntM[i]>0?Math.round((totM[i]/cntM[i])*100):0;
+    const cls=p>=80?'fg':p>=50?'fm':'fr';
+    fc+=`<td class="${cls}">${p}%</td>`;
+  }
+  fc+=`<td colspan="3"></td>`;
+  tfoot.innerHTML=`<tr>${fc}</tr>`;
+
+  updateStats();
+  applyFilter();
+}
+
+function updateStats(){
+  const total=DATA.length;
+  const ok=DATA.filter(d=>d.f==='Ok').length;
+  const aplica=DATA.filter(d=>d.a==='APLICA').length;
+  const halo=DATA.filter(d=>d.h.some(x=>x>0)).length;
+  document.getElementById('statsRow').innerHTML=`
+    <div class="stat-card"><div class="sv">${total}</div><div class="sl">Total</div></div>
+    <div class="stat-card"><div class="sv" style="color:#4ade80">${ok}</div><div class="sl">✅ OK</div></div>
+    <div class="stat-card"><div class="sv" style="color:#f87171">${total-ok}</div><div class="sl">❌ NOK</div></div>
+    <div class="stat-card"><div class="sv" style="color:#38bdf8">${aplica}</div><div class="sl">APLICA</div></div>
+    <div class="stat-card"><div class="sv" style="color:#fb923c">${halo}</div><div class="sl">🟠 Intens.</div></div>
+  `;
+}
+
+function applyFilter(){
+  const srch=document.getElementById('srch').value.toLowerCase();
+  document.querySelectorAll('#tbody tr').forEach(tr=>{
+    const nombre=tr.dataset.name||'';
+    const matchSearch=nombre.includes(srch);
+    let matchFilter=true;
+    if(filtroAct==='ok') matchFilter=tr.dataset.f==='ok';
+    else if(filtroAct==='nok') matchFilter=tr.dataset.f==='nok';
+    else if(filtroAct==='aplica') matchFilter=tr.dataset.a==='APLICA';
+    else if(filtroAct==='halo') matchFilter=tr.dataset.halo==='1';
+    tr.classList.toggle('hidden',!(matchSearch&&matchFilter));
+  });
+}
+
+function fil(tipo){
+  filtroAct=tipo;
+  document.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
+  const map={todos:'bTodos',ok:'bOk',nok:'bNok',aplica:'bAplica',halo:'bHalo'};
+  document.getElementById(map[tipo])?.classList.add('active');
+  applyFilter();
+}
+
+document.getElementById('srch').addEventListener('input',applyFilter);
+render();
+</script>
+</body>
+</html>
